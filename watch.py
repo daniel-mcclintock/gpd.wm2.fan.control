@@ -44,8 +44,8 @@ MAX_TEMP = 75
 MIN_ACTIVE_SPEED = 40
 MAX_ACTIVE_SPEED = 184
 
-UP_SLEEP = 0.2
-DOWN_SLEEP = 0.8
+UP_SLEEP = 0.5
+DOWN_SLEEP = 1
 
 SPEED_UP_STEP = 10
 SPEED_DOWN_STEP = 6
@@ -53,10 +53,10 @@ SPEED_DOWN_STEP = 6
 
 def do_watch():
     speed = 0
+    sensors.init()
 
     while True:
         try:
-            sensors.init()
 
             temp = [0]
 
@@ -86,15 +86,13 @@ def do_watch():
             target_speed = max(target_speed, MIN_ACTIVE_SPEED)
             target_speed = int(target_speed)
 
-        new_speed = speed
-
         if speed < target_speed:
-            new_speed += SPEED_UP_STEP
+            new_speed = speed + SPEED_UP_STEP
             # avoid overshoot
             new_speed = min(new_speed, target_speed)
             time.sleep(UP_SLEEP)
         else:
-            new_speed -= SPEED_DOWN_STEP
+            new_speed = speed - SPEED_DOWN_STEP
             # avoid undershoot
             new_speed = max(new_speed, target_speed)
             time.sleep(DOWN_SLEEP)
@@ -105,7 +103,7 @@ def do_watch():
             fan_control(new_speed)
             speed = new_speed
 
-        print(f"{new_speed} -> {target_speed} @ {temp}")
+            print(f"{new_speed} -> {target_speed} @ {temp}")
 
 
 try:
