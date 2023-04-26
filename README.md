@@ -1,4 +1,4 @@
-# gpd.wm2.fan.watch
+# gpd.wm2.fan.control
 
 This hopefully provides a less annoying fan experience on a GPD Win Max 2, the 
 default behaviour in my experience is too aggressive at low temperatures and 
@@ -33,9 +33,6 @@ Alternatively, you could use something like `ryzenadj` to set this at runtime.
 Update the constants described below to reflect your desired fan behaviour:
 
 ````
-MATCH_SENSORS: What sensors to consider when evaluating temperatures, the max
-    temp sampled from these is used.
-
 MAX_TEMP: Temps above this transition fan-speed to max.
 
 MIN_TEMP: Temps below this transition fan-speed to 0.
@@ -57,10 +54,11 @@ DOWN_SLEEP: How long to sleep between iterations when transitioning the fan
 SPEED_UP_STEP: How big a up step in fan speed is.
 SPEED_DOWN_STEP: How big a down step in fan speed is.
 
-MATCH_SENSORS: A dictionary of lm-sensor device and sensor labels, depending on
-    your software configuration this can vary. To work out what sensor labels
-    your system presents run `sensors` eg:
+MATCH_SENSORS: A dictionary of lm-sensor device and sensor labels to be used to
+    read temperature data from, depending on your software configuration this 
+    can vary. To work out what sensor labels your system presents run `sensors`:
 
+    eg:
     ```
         zenpower-pci-00c3
         Adapter: PCI adapter

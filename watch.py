@@ -44,6 +44,7 @@ MAX_TEMP = 75
 MIN_ACTIVE_SPEED = 40
 MAX_ACTIVE_SPEED = 184
 
+
 UP_SLEEP = 0.5
 DOWN_SLEEP = 1
 
@@ -57,7 +58,6 @@ def do_watch():
 
     while True:
         try:
-
             temp = [0]
 
             for chip in sensors.iter_detected_chips():
