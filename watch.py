@@ -53,7 +53,7 @@ SPEED_DOWN_STEP = 6
 
 
 def do_watch():
-    speed = 0
+    speed = ((MAX_ACTIVE_SPEED - MIN_ACTIVE_SPEED) / 2) + MIN_ACTIVE_SPEED
     sensors.init()
 
     while True:
