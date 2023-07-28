@@ -86,12 +86,21 @@ MATCH_SENSORS: A dictionary of lm-sensor device and sensor labels to be used to
 
     ```
         MATCH_SENSORS = {
-            "zenpower-pci-00c3": ["Tdie", "Tctl"],
-            "nvmi-pci-0200": ["Composite"],
-            "iwlwifi_1-virtual-0": ["temp1"],
-            "amdgpu-pci-7300": ["edge"],
+            "zenpower-pci-00c3": {"match": ["Tdie", "Tctl"], "bias": 1.0},
+            "nvmi-pci-0200": {"match": ["Composite"], "bias": 1.0},
+            "iwlwifi_1-virtual-0": {"match": ["temp1"], "bias": 1.0},
+            "amdgpu-pci-7300": {"match": ["edge"], "bias": 1.0},
         }
     ```
+
+    Setting a bias value will raise or lower the retrieved value from the
+    sensor, this can be useful for example when dealing with sensors that have
+    different cooling and temperature characteristics. 
+
+    The Wifi module on the GPD Win Max 2 is not actively cooled so you may wish 
+    to negatively bias its sensor module to avoid aggressive fan speeds during 
+    heavy WiFi usage with low CPU and GPU usage. Alternatively you could exclude
+    the WiFi module entirely from the MATCH_SENSORS constant.
 ````
 
 ## Details:

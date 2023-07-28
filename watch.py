@@ -32,10 +32,10 @@ import sensors
 from fan_control import fan_control
 
 MATCH_SENSORS = {
-    "k10temp-pci-00c3": ["Tctl"],
-    "nvmi-pci-0200": ["Composite"],
-    "iwlwifi_1-virtual-0": ["temp1"],
-    "amdgpu-pci-7300": ["edge"],
+    "k10temp-pci-00c3": {"match": ["Tctl"], "bias": 1.0},
+    "nvmi-pci-0200": {"match": ["Composite"], "bias": 1.0},
+    "iwlwifi_1-virtual-0": {"match": ["temp1"], "bias": 0.75},
+    "amdgpu-pci-7300": {"match": ["edge"], "bias": 1.0},
 }
 
 MIN_TEMP = 50
@@ -61,10 +61,12 @@ def do_watch():
             temp = [0]
 
             for chip in sensors.iter_detected_chips():
-                if str(chip) in MATCH_SENSORS:
+                _chip = str(chip)
+                if _chip in MATCH_SENSORS:
                     for feature in chip:
-                        if feature.label in MATCH_SENSORS[str(chip)]:
+                        if feature.label in MATCH_SENSORS[_chip]["match"]:
                             temp.append(feature.get_value())
+                            temp[-1] *= MATCH_SENSORS[_chip]["bias"]
 
             sensors.cleanup
 
