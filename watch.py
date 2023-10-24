@@ -38,17 +38,19 @@ MATCH_SENSORS = {
     "amdgpu-pci-7300": {"match": ["edge"], "bias": 1.0},
 }
 
-MIN_TEMP = 50
-MAX_TEMP = 75
+MIN_TEMP = 55
+MAX_TEMP = 74
 
-MIN_ACTIVE_SPEED = 40
-MAX_ACTIVE_SPEED = 184
+MIN_ACTIVE_SPEED = 70
+MAX_ACTIVE_SPEED = 165
+ABSOLUTE_MAX_SPEED = 184
 
 
-UP_SLEEP = 0.5
-DOWN_SLEEP = 1
+UP_SLEEP = 0.75
+DOWN_SLEEP = 1.5
+SLEEP = 2
 
-SPEED_UP_STEP = 4
+SPEED_UP_STEP = 8
 SPEED_DOWN_STEP = 4
 
 
@@ -65,7 +67,7 @@ def do_watch():
                 if _chip in MATCH_SENSORS:
                     for feature in chip:
                         if feature.label in MATCH_SENSORS[_chip]["match"]:
-                            temp.append(feature.get_value())
+                            temp.append(int(feature.get_value()))
                             temp[-1] *= MATCH_SENSORS[_chip]["bias"]
 
             sensors.cleanup
@@ -90,22 +92,34 @@ def do_watch():
 
         if speed < target_speed:
             new_speed = speed + SPEED_UP_STEP
+
             # avoid overshoot
-            new_speed = min(new_speed, target_speed)
+            new_speed = min(max(0, new_speed), MAX_ACTIVE_SPEED)
+
+            if new_speed != speed:
+                fan_control(new_speed)
+                speed = new_speed
+
+                print(f"{new_speed} -> {target_speed} @ {temp}")
+
             time.sleep(UP_SLEEP)
-        else:
+        elif speed > target_speed:
             new_speed = speed - SPEED_DOWN_STEP
-            # avoid undershoot
-            new_speed = max(new_speed, target_speed)
+            # avoid overshoot
+            new_speed = min(max(0, new_speed), MAX_ACTIVE_SPEED)
+
+            if temp > MAX_TEMP:
+                new_speed = ABSOLUTE_MAX_SPEED
+
+            if new_speed != speed:
+                fan_control(new_speed)
+                speed = new_speed
+
+                print(f"{new_speed} -> {target_speed} @ {temp}")
+
             time.sleep(DOWN_SLEEP)
-
-        new_speed = min(max(0, new_speed), MAX_ACTIVE_SPEED)
-
-        if new_speed != speed:
-            fan_control(new_speed)
-            speed = new_speed
-
-            print(f"{new_speed} -> {target_speed} @ {temp}")
+        else:
+            time.sleep(SLEEP)
 
 
 try:
